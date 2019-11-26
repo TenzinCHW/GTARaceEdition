@@ -35,7 +35,9 @@ def parse_vertex(vertex_string_list):
 def parse_face(face_string_list, vertices):
     '''Parses a line of a face from an obj file using the list of vertices (list of 3-tuples of floats)
     e.g. face_string_list = ['2//', '1//', '4//', '3//']
-    output list of triangles (3-tuples of 3-tuples of floats)'''
+    output list of triangles (3-tuples of 3-tuples of floats)
+    Algorithm adapted from pseudocode at
+    https://stackoverflow.com/questions/23723993/converting-quadriladerals-in-an-obj-file-into-triangles'''
     points = [int(pt.split('/')[0]) - 1 for pt in face_string_list] # Each point is somethng like '2//' so we want 1 as int (2 is indexed from 1)
     triangles = [tuple(vertices[points[i]] for i in range(3))] # Take first 3 points
     # Take the ith, (i+2)-th and (i+3)-th point as a triangle (triangle strip)
@@ -47,9 +49,6 @@ def parse_face(face_string_list, vertices):
         triangle = vertices[pi], vertices[pi2], vertices[pi3]
         triangles.append(triangle)
     return triangles
-
-def skip():
-    pass
 
 if __name__ == '__main__':
     outp = parse_obj('testdata.obj')
