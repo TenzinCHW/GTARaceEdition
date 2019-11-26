@@ -1,0 +1,12 @@
+module steering (
+    input clk,  // clock
+    input rst,  // reset
+    output out
+  ) {
+
+  // TODO convert 10 bit input into 16 bit fixed point radius of circle and left/right
+  // i.e. 
+  always {
+    out = 0;
+  }
+}

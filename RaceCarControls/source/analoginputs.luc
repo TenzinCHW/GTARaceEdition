@@ -1,0 +1,59 @@
+module analoginputs #(
+    SIZE = 4 : SIZE > 0,  // Number of inputs to sample
+    DELAY = 23 : DELAY > 0  // Determines when to sample
+    )(
+    input clk,  // clock
+    input rst,  // reset    
+    input cclk,  // cclock
+    input spi_ss,
+    input spi_mosi,
+    input spi_sck,
+    output spi_miso,
+    output spi_channel[4],
+    input avr_rx,
+    input avr_rx_busy,
+    output avr_tx,
+    output out[SIZE][10]
+  ) {
+
+  const LED_TO_CHANNEL = {4d9,4d8,4d7,4d6,4d5,4d4,4d1,4d0};
+  const CHANNEL_TO_LED = {4bx,4bx,4bx,4bx,4bx,4bx,4d7,4d6,4d5,4d4,4d3,4d2,4bx,4bx,4d1,4d0};
+
+  .clk(clk) {
+    .rst(rst) {
+      avr_interface avr;
+      counter cnt[DELAY];
+      dff ch[$clog2(SIZE)];
+      dff latch_output[SIZE][10];
+    }
+  }
+
+  always {
+    avr.cclk = cclk;
+    avr.spi_ss = spi_ss;
+    avr.spi_mosi = spi_mosi;
+    avr.spi_sck = spi_sck;
+    avr.rx = avr_rx;
+    avr.tx_block = avr_rx_busy;
+    spi_miso = avr.spi_miso;
+    spi_channel = avr.spi_channel;
+    avr_tx = avr.tx;
+    // unused serial port
+    avr.new_tx_data = 0;
+    avr.tx_data = 8hxx;
+
+    avr.channel = LED_TO_CHANNEL[ch.q];
+    if (avr.new_sample) {
+      if (ch.q == SIZE - 1) { // reached final channel to sample
+        ch.d = 0;
+      } else {
+        ch.d = ch.q + 1;
+      }
+      if (&cnt.value) {
+        latch_output.d[CHANNEL_TO_LED[avr.sample_channel]] = avr.sample;
+      }
+    }
+
+    out = latch_output.q;
+  }
+}
