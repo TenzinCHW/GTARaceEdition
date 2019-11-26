@@ -26,7 +26,7 @@ module matvecmul #(
         mul[i] = mul[i] + mat[i][j] * vec[i];
       }
     }
-    
+
     for (i = 0; i < HT; i++) {
       out[i] = mul[i][NBITS + QUOTIENT - 1:QUOTIENT];
     }

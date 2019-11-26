@@ -1,10 +1,9 @@
 // This module will perform a dot product between two vectors
 // REQUIREMENT: 1 cycle
-
 module dotprod #(
-    NBITS = 16 : NBITS > 1, // number of bits for each element
-    SZ = 4 : SZ > 0, // length of each vector
-    QUOTIENT = 8 : QUOTIENT >= 0 // number of bits to represent decimals
+    NBITS = 16 : NBITS > 1, // number of bits for each element^M
+    SZ = 4 : SZ > 0, // length of each vector^M
+    QUOTIENT = 8 : QUOTIENT >= 0 // number of bits to represent decimals^M
   )(
     input vec1[SZ][NBITS],
     input vec2[SZ][NBITS],
@@ -12,7 +11,7 @@ module dotprod #(
   ) {
 
   sig sum[NBITS * 2];
-  var i;
+    var i;
 
   always {
     sum = 0;
