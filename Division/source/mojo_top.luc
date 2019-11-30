@@ -1,0 +1,88 @@
+module mojo_top (
+    input clk,              // 50MHz clock
+    input rst_n,            // reset button (active low)
+    output led [8],         // 8 user controllable LEDs
+    input cclk,             // configuration clock, AVR ready when high
+    output spi_miso,        // AVR SPI MISO
+    input spi_ss,           // AVR SPI Slave Select
+    input spi_mosi,         // AVR SPI MOSI
+    input spi_sck,          // AVR SPI Clock
+    output spi_channel [4], // AVR general purpose pins (used by default to select ADC channel)
+    input avr_tx,           // AVR TX (FPGA RX)
+    output avr_rx,          // AVR RX (FPGA TX)
+    input avr_rx_busy,      // AVR RX buffer full
+    output io_led [3][8],   // LEDs on IO Shield
+    output io_seg [8],      // 7-segment LEDs on IO Shield
+    output io_sel [4],      // Digit select on IO Shield
+    input io_button [5],    // 5 buttons on IO Shield
+    input io_dip [3][8]     // DIP switches on IO Shield
+  ) {
+  
+  sig rst;                  // reset signal
+  sig reducedctr;
+  sig dividend[16];
+  sig divisor[16];
+  sig start;
+  sig meow[8];
+  
+  qdiv q1(
+    #Q(8),
+    #N(16),
+    .i_dividend(dividend),
+    .i_divisor(divisor),
+    .i_start(start),
+    .i_clk(clk)
+  );
+  
+  
+  .clk(clk) {
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    reset_conditioner reset_cond;
+    
+    .rst(rst) {
+      analoginputs ai(#SIZE(2));
+      counter ctr[25];
+      dff samples[10];
+      dff moo[8];
+    }
+  }
+  
+  always {
+    reset_cond.in = ~rst_n; // input raw inverted reset signal
+    rst = reset_cond.out;   // conditioned reset_conditioner
+    
+    //io_led = 3x{{8h00}};    // turn LEDs off
+    io_seg = 8hff;          // turn segments off
+    io_sel = 4hf;           // select no digits
+    
+    ai.cclk = cclk;
+    ai.spi_ss = spi_ss;
+    ai.spi_mosi = spi_mosi;
+    ai.spi_sck =  spi_sck;
+    ai.avr_rx = avr_tx;
+    ai.avr_rx_busy = avr_rx_busy;
+    spi_miso = ai.spi_miso;
+    spi_channel = ai.spi_channel;
+    avr_rx = ai.avr_tx;
+    
+    reducedctr = &ctr.value;
+    
+    if (reducedctr) {
+      dividend = ai.out[0];
+      divisor = ai.out[1];
+      start = 1;  // No need reset to 0, just make sure you only read when it's ready (if o_complete must come after this)
+    }
+    
+    if (q1.o_complete) {
+      samples.d = q1.o_quotient_out[11:4];
+    }
+    
+    io_led[1:0] = {ai.out[1][9:2], ai.out[0][9:2]};
+    
+    moo.d = 4;
+    meow = moo.q;
+    io_led[2] = samples.q[9:2];
+    led = meow;
+  }
+}
