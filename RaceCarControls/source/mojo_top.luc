@@ -30,7 +30,7 @@ module mojo_top (
       dff ch;
       dff values[2][8];
       counter cnt(#SIZE(24));*/
-      analoginputs ai(#SIZE(2));
+      analoginputs ai(#SIZE(4));
     }
   }
   
@@ -81,7 +81,8 @@ module mojo_top (
     avr_rx = ai.avr_tx;
 
     io_led = 3x{{8h00}};    // turn LEDs off
-    io_led[1:0] = {ai.out[1][9:2], ai.out[0][9:2]};
+    io_led[2:0] = {ai.out[2][9:2], ai.out[1][9:2], ai.out[0][9:2]};
+    led = ai.out[3][9:2];
 
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits
