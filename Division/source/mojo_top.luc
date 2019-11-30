@@ -67,11 +67,12 @@ module mojo_top (
     avr_rx = ai.avr_tx;
     
     reducedctr = &ctr.value;
+    start = 0;  // Default value of start should be 0
     
     if (reducedctr) {
       dividend = ai.out[0];
       divisor = ai.out[1];
-      start = 1;  // No need reset to 0, just make sure you only read when it's ready (if o_complete must come after this)
+      start = 1;
     }
     
     if (q1.o_complete) {
