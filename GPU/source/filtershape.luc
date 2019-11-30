@@ -1,0 +1,25 @@
+// This module will output a 1 if the coordinates of all points of shape are within the clip volume
+// REQUIREMENT: 1 cycle
+module filtershape #(
+    NBITS = 16 : NBITS > 1, // number of bits for each coordinate
+    SZ = 3 : SZ > 0 // number of points in shape, defaults to triangle
+  )(
+    input shape[SZ][3][NBITS],  // shape having SZ points with 3 coordinates x, y and z
+    input range[3][2][NBITS],  // range is [max, min] (index 1 is max, 0 is min) for each dimension x, y and z
+    output out
+  ) {
+
+  // These are to record whether each point's x, y and z values are in range
+  sig xyz[SZ][3];
+  var i, j;
+
+  always {
+    for (i = 0; i < SZ; i++) {  // For each coordinate i i.e. only shape should be indexed by i
+      for (j = 0; j < 3; j++) {  // For each dimension j
+        xyz[i][j] = ($signed(shape[i][j]) >= $signed(range[j][0])) &
+                    ($signed(shape[i][j]) <= $signed(range[j][1]));
+      }
+    }
+    out = &(&xyz);  // Bitwise reduce
+  }
+}
