@@ -11,22 +11,22 @@ module matvecmul #(
     input vec[SZ][NBITS],
     output out[HT][NBITS]
   ) {
-
+  
   //dotprod dp[HT] (#NBITS(NBITS), #SZ(SZ), #QUOTIENT(QUOTIENT));
   sig mul[HT][NBITS * 2];
   var i, j;
-
+  
   always {
     //dp.vec1 = mat;
     //dp.vec2 = HTx{{vec}};
-
+    
     mul = HTx{{(NBITS * 2)x{0}}};
     for (i = 0; i < HT; i++) {
       for (j = 0; j < SZ; j++) {
         mul[i] = mul[i] + mat[i][j] * vec[i];
       }
     }
-
+    
     for (i = 0; i < HT; i++) {
       out[i] = mul[i][NBITS + QUOTIENT - 1:QUOTIENT];
     }

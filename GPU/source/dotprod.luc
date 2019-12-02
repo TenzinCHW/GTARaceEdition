@@ -9,16 +9,17 @@ module dotprod #(
     input vec2[SZ][NBITS],
     output out[NBITS]
   ) {
-
-  sig sum[NBITS * 2];
-    var i;
-
+  
+  sig sum[2 * NBITS];
+  var i;
+  
   always {
+    
     sum = 0;
     for (i = 0; i < SZ; i++) {
       sum = sum + vec1[i] * vec2[i];
     }
-
+    
     out = sum[NBITS+QUOTIENT-1:QUOTIENT];
   }
 }

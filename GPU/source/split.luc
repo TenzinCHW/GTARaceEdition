@@ -1,0 +1,9 @@
+module split (
+    input in[16],
+    output out[2][8]
+  ) {
+
+  always {
+    out = {in[15:8], in[7:0]};
+  }
+}

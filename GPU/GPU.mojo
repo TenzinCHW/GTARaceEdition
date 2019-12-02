@@ -3,13 +3,12 @@
   <files>
     <src>filtershape.luc</src>
     <src>matmul.luc</src>
-    <src>dotprod.luc</src>
     <src>matvecmul.luc</src>
+    <src>dotprod.luc</src>
+    <src>split.luc</src>
     <src top="true">mojo_top.luc</src>
+    <ucf lib="true">io_shield.ucf</ucf>
     <ucf lib="true">mojo.ucf</ucf>
     <component>reset_conditioner.luc</component>
-    <component>pipeline.luc</component>
-    <component>button_conditioner.luc</component>
-    <component>edge_detector.luc</component>
   </files>
 </project>
