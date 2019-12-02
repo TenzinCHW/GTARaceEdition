@@ -3,8 +3,8 @@
   <files>
     <src>filtershape.luc</src>
     <src>matmul.luc</src>
-    <src>matvecmul.luc</src>
     <src>dotprod.luc</src>
+    <src>matvecmul.luc</src>
     <src>split.luc</src>
     <src top="true">mojo_top.luc</src>
     <ucf lib="true">io_shield.ucf</ucf>
